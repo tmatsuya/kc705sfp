@@ -29,8 +29,6 @@ read_verilog "../rtl/network_path/network_path.v"
 read_verilog "../rtl/network_path/ten_gig_eth_pcs_pma_ip_GT_Common_wrapper.v"
 read_verilog "../rtl/top.v"
 read_verilog "../../../cores/xgmiisync/rtl/xgmiisync.v"
-read_verilog "../../../cores/crc32/rtl/CRC32_D64.v"
-read_verilog "../../../cores/crc32/rtl/CRC32_D32.v"
 
 
 # NGC files

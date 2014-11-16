@@ -1,14 +1,7 @@
 `include "../rtl/setup.v"
 `timescale 1ns / 1ps
 
-module top # (
-	parameter PL_FAST_TRAIN       = "FALSE", // Simulation Speedup
-	parameter PCIE_EXT_CLK	= "TRUE",    // Use External Clocking Module
-	parameter PCIE_EXT_GT_COMMON  = "FALSE",
-	parameter REF_CLK_FREQ	= 0,     // 0 - 100 MHz, 1 - 125 MHz, 2 - 250 MHz
-	parameter C_DATA_WIDTH	= 64, // RX/TX interface data width
-	parameter KEEP_WIDTH	  = C_DATA_WIDTH / 8 // TSTRB width
-) (
+module top (
 `ifdef ENABLE_XGMII01
 	input xphy0_refclk_p, 
 	input xphy0_refclk_n, 
@@ -32,16 +25,6 @@ module top # (
 	output xphy4_txn, 
 	input xphy4_rxp, 
 	input xphy4_rxn,
-`endif
-`ifdef ENABLE_PCIE
-	// PCI Express
-	input sys_clk_p,
-	input sys_clk_n,
-	input sys_rst_n,
-	output [3:0] pci_exp_txp,
-	output [3:0] pci_exp_txn,
-	input [3:0] pci_exp_rxp,
-	input [3:0] pci_exp_rxn,
 `endif
 	output fmc_ok_led,
 	input [1:0] fmc_gbtclk0_fsel,
@@ -528,12 +511,10 @@ assign led[0] = xphy0_status[0];
 assign led[1] = xphy1_status[0]; 
 assign led[2] = xphy2_status[0]; 
 assign led[3] = xphy3_status[0]; 
-`ifndef ENABLE_PCIE
 assign led[4] = 1'b0;
 assign led[5] = 1'b0;
 assign led[6] = 1'b0;
 assign led[7] = 1'b0;
-`endif
 
 
 reg [15:0] tx_counter = 16'h0;
