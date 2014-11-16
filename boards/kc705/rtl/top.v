@@ -2,6 +2,12 @@
 `timescale 1ns / 1ps
 
 module top (
+	// SI570 user clock
+	input si570_refclk_p,
+	input si570_refclk_n,
+	// USER SMA GPIO clock
+	output user_sma_gpio_p,
+	output user_sma_gpio_n,
 `ifdef ENABLE_XGMII01
 	input xphy0_refclk_p, 
 	input xphy0_refclk_n, 
@@ -44,6 +50,36 @@ module top (
 // Clock and Reset
 wire sys_rst;
 assign sys_rst = button_c; // 1'b0;
+
+`ifndef NO
+wire clksi570;
+IBUFDS IBUFDS_0 (
+	.I(si570_refclk_p),
+	.IB(si570_refclk_n),
+	.O(clksi570)
+);
+
+reg [6:0] counter = 7'd0;
+reg [31:0] si570_counter = 32'h0;
+always @(posedge clksi570) begin
+	if (sys_rst) begin
+		counter <= 7'd0;
+		si570_counter <= 156250000;
+	end else begin
+		si570_counter <= si570_counter - 32'd1;
+		if (si570_counter == 32'd0) begin
+			si570_counter <= 156250000;
+			counter <= counter + 7'd1;
+		end
+	end
+end
+
+OBUFDS OBUFDS_0 (
+	.I(clki570),
+	.O(user_sma_gpio_p),
+	.OB(user_sma_gpio_n)
+);
+`endif
  
 // -------------------
 // -- Local Signals --
@@ -52,10 +88,6 @@ assign sys_rst = button_c; // 1'b0;
 // Xilinx Hard Core Instantiation
 
 wire		clk156;
-`ifdef ENABLE_PCIE
-wire		user_clk;
-wire		user_reset;
-`endif
 
 wire [63:0]	xgmii0_txd, xgmii1_txd, xgmii2_txd, xgmii3_txd, xgmii4_txd;
 wire [7:0]	xgmii0_txc, xgmii1_txc, xgmii2_txc, xgmii3_txc, xgmii4_txc;
@@ -437,6 +469,7 @@ network_path network_path_inst_4 (
 ); 
 `endif    //ENABLE_XGMII4
 
+`ifdef ENABLE_XGMII01
 `ifdef USE_DIFF_QUAD
 xgbaser_gt_diff_quad_wrapper xgbaser_gt_wrapper_inst_0 (
 	.areset(sys_rst),
@@ -502,19 +535,14 @@ xgbaser_gt_same_quad_wrapper xgbaser_gt_wrapper_inst_0 (
 	.qplloutrefclk(qplloutrefclk) 
 );
 `endif    //USE_DIFF_QUAD
+`endif
 
 
 
 wire [31:0] global_counter;
 
-assign led[0] = xphy0_status[0]; 
-assign led[1] = xphy1_status[0]; 
-assign led[2] = xphy2_status[0]; 
-assign led[3] = xphy3_status[0]; 
-assign led[4] = 1'b0;
-assign led[5] = 1'b0;
-assign led[6] = 1'b0;
-assign led[7] = 1'b0;
+assign led[6:0] = counter;
+assign led[7] = xphy0_status[0]; 
 
 
 reg [15:0] tx_counter = 16'h0;
