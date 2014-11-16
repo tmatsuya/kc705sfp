@@ -184,14 +184,14 @@ set_property IOSTANDARD LVCMOS25 [get_ports fmc_clk_312_5]
 
 # Domain Crossing Constraints
 #create_clock -name userclk2 -period 4.0 [get_nets user_clk]
-create_clock -period 6.400 -name clk156 [get_pins xgbaser_gt_wrapper_inst_0/clk156_bufg_inst/O]
-create_clock -period 12.800 -name dclk [get_pins xgbaser_gt_wrapper_inst_0/dclk_bufg_inst/O]
-create_clock -period 3.200 -name refclk [get_pins xgbaser_gt_wrapper_inst_0/ibufds_inst/O]
-create_clock -period 3.103 -name rxoutclk0 [get_pins network_path_inst_0/ten_gig_eth_pcs_pma_inst/inst/gt0_gtwizard_10gbaser_multi_gt_i/gt0_gtwizard_10gbaser_i/gtxe2_i/RXOUTCLK]
-create_clock -period 3.103 -name rxoutclk1 [get_pins network_path_inst_1/ten_gig_eth_pcs_pma_inst/inst/gt0_gtwizard_10gbaser_multi_gt_i/gt0_gtwizard_10gbaser_i/gtxe2_i/RXOUTCLK]
-create_clock -period 3.103 -name txoutclk0 [get_pins network_path_inst_0/ten_gig_eth_pcs_pma_inst/inst/gt0_gtwizard_10gbaser_multi_gt_i/gt0_gtwizard_10gbaser_i/gtxe2_i/TXOUTCLK]
-create_clock -period 3.103 -name txoutclk1 [get_pins network_path_inst_1/ten_gig_eth_pcs_pma_inst/inst/gt0_gtwizard_10gbaser_multi_gt_i/gt0_gtwizard_10gbaser_i/gtxe2_i/TXOUTCLK]
-
+#create_clock -period 6.400 -name clk156 [get_pins xgbaser_gt_wrapper_inst_0/clk156_bufg_inst/O]
+#create_clock -period 12.800 -name dclk [get_pins xgbaser_gt_wrapper_inst_0/dclk_bufg_inst/O]
+#create_clock -period 3.200 -name refclk [get_pins xgbaser_gt_wrapper_inst_0/ibufds_inst/O]
+#create_clock -period 3.103 -name rxoutclk0 [get_pins network_path_inst_0/ten_gig_eth_pcs_pma_inst/inst/gt0_gtwizard_10gbaser_multi_gt_i/gt0_gtwizard_10gbaser_i/gtxe2_i/RXOUTCLK]
+#create_clock -period 3.103 -name rxoutclk1 [get_pins network_path_inst_1/ten_gig_eth_pcs_pma_inst/inst/gt0_gtwizard_10gbaser_multi_gt_i/gt0_gtwizard_10gbaser_i/gtxe2_i/RXOUTCLK]
+#create_clock -period 3.103 -name txoutclk0 [get_pins network_path_inst_0/ten_gig_eth_pcs_pma_inst/inst/gt0_gtwizard_10gbaser_multi_gt_i/gt0_gtwizard_10gbaser_i/gtxe2_i/TXOUTCLK]
+#create_clock -period 3.103 -name txoutclk1 [get_pins network_path_inst_1/ten_gig_eth_pcs_pma_inst/inst/gt0_gtwizard_10gbaser_multi_gt_i/gt0_gtwizard_10gbaser_i/gtxe2_i/TXOUTCLK]
+#
 #
 #create_generated_clock -name clk50 -source [get_ports clk_ref_p] -divide_by 4 [get_pins {clk_divide_reg[1]/Q}]
 #set_clock_sense -positive clk_divide_reg[1]_i_1/O
