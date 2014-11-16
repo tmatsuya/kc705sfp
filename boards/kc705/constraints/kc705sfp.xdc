@@ -71,17 +71,23 @@ set_property IOSTANDARD LVCMOS25 [get_ports {sfp_tx_disable[3]}]
 set_property PACKAGE_PIN Y20 [get_ports {sfp_tx_disable[4]}]
 set_property IOSTANDARD LVCMOS25 [get_ports {sfp_tx_disable[4]}]
 
-# SI560 (156.25MHz)
+# SI560 (156.25MHz) input
 set_property PACKAGE_PIN K28 [get_ports si570_refclk_p]
 set_property IOSTANDARD LVDS_25 [get_ports si570_refclk_p]
 set_property PACKAGE_PIN K29 [get_ports si570_refclk_n]
 set_property IOSTANDARD LVDS_25 [get_ports si570_refclk_n]
 
-# USER_SMA_GPIO
+# USER_SMA_GPIO output
 set_property PACKAGE_PIN Y23 [get_ports user_sma_gpio_p]
 set_property IOSTANDARD LVDS_25 [get_ports user_sma_gpio_p]
 set_property PACKAGE_PIN Y24 [get_ports user_sma_gpio_n]
 set_property IOSTANDARD LVDS_25 [get_ports user_sma_gpio_n]
+
+# user_sma_clock input (for internal SFP+ module)
+set_property PACKAGE_PIN L25 [get_ports user_sma_clock_p]
+set_property IOSTANDARD LVDS_25 [get_ports user_sma_clock_p]
+set_property PACKAGE_PIN K25 [get_ports user_sma_clock_n]
+set_property IOSTANDARD LVDS_25 [get_ports user_sma_clock_n]
 
 ## SFP TX Fault loc
 set_property PACKAGE_PIN E20 [get_ports {sfp_tx_fault[0]}]

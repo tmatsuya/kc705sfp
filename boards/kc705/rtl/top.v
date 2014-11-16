@@ -2,12 +2,15 @@
 `timescale 1ns / 1ps
 
 module top (
-	// SI570 user clock
+	// SI570 user clock (input 156.25MHz)
 	input si570_refclk_p,
 	input si570_refclk_n,
-	// USER SMA GPIO clock
+	// USER SMA GPIO clock (output to USER SMA clock)
 	output user_sma_gpio_p,
 	output user_sma_gpio_n,
+	// USER SMA clock (input from USER SMA GPIO for SFP+ module)
+	input user_sma_clock_p,
+	input user_sma_clock_n,
 `ifdef ENABLE_XGMII01
 	input xphy0_refclk_p, 
 	input xphy0_refclk_n, 
@@ -51,17 +54,25 @@ module top (
 wire sys_rst;
 assign sys_rst = button_c; // 1'b0;
 
-`ifndef NO
 wire clksi570;
 IBUFDS IBUFDS_0 (
 	.I(si570_refclk_p),
 	.IB(si570_refclk_n),
 	.O(clksi570)
 );
+`ifndef ENABLE_XGMII4
+wire clkusersma;
+IBUFDS IBUFDS_1 (
+	.I(user_sma_clock_p),
+	.IB(user_sma_clock_n),
+	.O(clkusersma)
+);
+`endif
 
 reg [6:0] counter = 7'd0;
 reg [31:0] si570_counter = 32'h0;
-always @(posedge clksi570) begin
+//always @(posedge clksi570) begin
+always @(posedge clkusersma) begin
 	if (sys_rst) begin
 		counter <= 7'd0;
 		si570_counter <= 156250000;
@@ -79,7 +90,6 @@ OBUFDS OBUFDS_0 (
 	.O(user_sma_gpio_p),
 	.OB(user_sma_gpio_n)
 );
-`endif
  
 // -------------------
 // -- Local Signals --
@@ -474,8 +484,8 @@ network_path network_path_inst_4 (
 xgbaser_gt_diff_quad_wrapper xgbaser_gt_wrapper_inst_0 (
 	.areset(sys_rst),
 `ifdef ENABLE_XGMII4
-	.refclk_p(xphy4_refclk_p),
-	.refclk_n(xphy4_refclk_n),
+	.refclk_p(user_sma_clock_p),
+	.refclk_n(user_sma_clock_n),
 `else
 	.refclk_p(xphy0_refclk_p),
 	.refclk_n(xphy0_refclk_n),
@@ -507,8 +517,8 @@ xgbaser_gt_diff_quad_wrapper xgbaser_gt_wrapper_inst_0 (
 xgbaser_gt_same_quad_wrapper xgbaser_gt_wrapper_inst_0 (
 	.areset(sys_rst),
 `ifdef ENABLE_XGMII4
-	.refclk_p(xphy4_refclk_p),
-	.refclk_n(xphy4_refclk_n),
+	.refclk_p(user_sma_clock_p),
+	.refclk_n(user_sma_clock_n),
 `else
 	.refclk_p(xphy0_refclk_p),
 	.refclk_n(xphy0_refclk_n),
