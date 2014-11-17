@@ -3,51 +3,51 @@
 
 module top (
 	// SI570 user clock (input 156.25MHz)
-	input si570_refclk_p,
-	input si570_refclk_n,
+	input wire si570_refclk_p,
+	input wire si570_refclk_n,
 	// USER SMA GPIO clock (output to USER SMA clock)
-	output user_sma_gpio_p,
-	output user_sma_gpio_n,
+	output wire user_sma_gpio_p,
+	output wire user_sma_gpio_n,
 	// USER SMA clock (input from USER SMA GPIO for SFP+ module)
-	input user_sma_clock_p,
-	input user_sma_clock_n,
+	input wire user_sma_clock_p,
+	input wire user_sma_clock_n,
 `ifdef ENABLE_XGMII01
-	input xphy0_refclk_p, 
-	input xphy0_refclk_n, 
+	input wire xphy0_refclk_p, 
+	input wire xphy0_refclk_n, 
 `endif
-	output [4:0] sfp_tx_disable, 
-	output [3:0] sfp_tx_fault, 
+	output wire [4:0] sfp_tx_disable, 
+	output wire [3:0] sfp_tx_fault, 
 `ifdef ENABLE_XGMII01
-	output xphy0_txp, 
-	output xphy0_txn, 
-	input xphy0_rxp, 
-	input xphy0_rxn,
-	output xphy1_txp, 
-	output xphy1_txn, 
-	input xphy1_rxp, 
-	input xphy1_rxn,
+	output wire xphy0_txp, 
+	output wire xphy0_txn, 
+	input wire xphy0_rxp, 
+	input wire xphy0_rxn,
+	output wire xphy1_txp, 
+	output wire xphy1_txn, 
+	input wire xphy1_rxp, 
+	input wire xphy1_rxn,
 `endif
 `ifdef ENABLE_XGMII4
-	input xphy4_refclk_p, 
-	input xphy4_refclk_n, 
-	output xphy4_txp, 
-	output xphy4_txn, 
-	input xphy4_rxp, 
-	input xphy4_rxn,
+	input wire xphy4_refclk_p, 
+	input wire xphy4_refclk_n, 
+	output wire xphy4_txp, 
+	output wire xphy4_txn, 
+	input wire xphy4_rxp, 
+	input wire xphy4_rxn,
 `endif
-	output fmc_ok_led,
-	input [1:0] fmc_gbtclk0_fsel,
-	output fmc_clk_312_5,
+	output wire fmc_ok_led,
+	input wire [1:0] fmc_gbtclk0_fsel,
+	output wire fmc_clk_312_5,
 	// BUTTON
-	input button_n,
-	input button_s,
-	input button_w,
-	input button_e,
-	input button_c,
+	input wire button_n,
+	input wire button_s,
+	input wire button_w,
+	input wire button_e,
+	input wire button_c,
 	// DIP SW
-	input [3:0] dipsw,
+	input wire [3:0] dipsw,
 	// Diagnostic LEDs
-	output [7:0] led	   
+	output wire [7:0] led	   
 );
 
 // Clock and Reset
@@ -86,7 +86,7 @@ always @(posedge clkusersma) begin
 end
 
 OBUFDS OBUFDS_0 (
-	.I(clki570),
+	.I(clksi570),
 	.O(user_sma_gpio_p),
 	.OB(user_sma_gpio_n)
 );
