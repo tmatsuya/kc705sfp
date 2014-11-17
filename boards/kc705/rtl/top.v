@@ -8,9 +8,12 @@ module top (
 	// USER SMA GPIO clock (output to USER SMA clock)
 	output wire user_sma_gpio_p,
 	output wire user_sma_gpio_n,
-	// USER SMA clock (input from USER SMA GPIO for SFP+ module)
-	input wire user_sma_clock_p,
-	input wire user_sma_clock_n,
+	// USER SMA clock (use for 156.25MHz test only)
+//	input wire user_sma_clock_p,
+//	input wire user_sma_clock_n,
+	// SMA MGT reference clock (input from USER SMA GPIO for SFP+ module)
+	input wire sma_mgt_refclk_p,
+	input wire sma_mgt_refclk_n,
 `ifdef ENABLE_XGMII01
 	input wire xphy0_refclk_p, 
 	input wire xphy0_refclk_n, 
@@ -28,8 +31,8 @@ module top (
 	input wire xphy1_rxn,
 `endif
 `ifdef ENABLE_XGMII4
-	input wire xphy4_refclk_p, 
-	input wire xphy4_refclk_n, 
+//	input wire xphy4_refclk_p, 
+//	input wire xphy4_refclk_n, 
 	output wire xphy4_txp, 
 	output wire xphy4_txn, 
 	input wire xphy4_rxp, 
@@ -60,7 +63,13 @@ IBUFDS IBUFDS_0 (
 	.IB(si570_refclk_n),
 	.O(clksi570)
 );
-`ifndef ENABLE_XGMII4
+OBUFDS OBUFDS_0 (
+	.I(clksi570),
+	.O(user_sma_gpio_p),
+	.OB(user_sma_gpio_n)
+);
+
+`ifdef NO
 wire clkusersma;
 IBUFDS IBUFDS_1 (
 	.I(user_sma_clock_p),
@@ -69,28 +78,6 @@ IBUFDS IBUFDS_1 (
 );
 `endif
 
-reg [6:0] counter = 7'd0;
-reg [31:0] si570_counter = 32'h0;
-//always @(posedge clksi570) begin
-always @(posedge clkusersma) begin
-	if (sys_rst) begin
-		counter <= 7'd0;
-		si570_counter <= 156250000;
-	end else begin
-		si570_counter <= si570_counter - 32'd1;
-		if (si570_counter == 32'd0) begin
-			si570_counter <= 156250000;
-			counter <= counter + 7'd1;
-		end
-	end
-end
-
-OBUFDS OBUFDS_0 (
-	.I(clksi570),
-	.O(user_sma_gpio_p),
-	.OB(user_sma_gpio_n)
-);
- 
 // -------------------
 // -- Local Signals --
 // -------------------
@@ -464,7 +451,7 @@ network_path network_path_inst_4 (
 	.tx_resetdone(xphy4_tx_resetdone),
     
 	.signal_detect(xphy4_signal_detect),
-	.tx_fault(sfp_tx_fault[3]),
+	.tx_fault(),
 	.prtad(xphy4_prtad),
 	.xphy_status(xphy4_status),
 	.clk156(clk156),
@@ -479,13 +466,12 @@ network_path network_path_inst_4 (
 ); 
 `endif    //ENABLE_XGMII4
 
-`ifdef ENABLE_XGMII01
 `ifdef USE_DIFF_QUAD
 xgbaser_gt_diff_quad_wrapper xgbaser_gt_wrapper_inst_0 (
 	.areset(sys_rst),
 `ifdef ENABLE_XGMII4
-	.refclk_p(user_sma_clock_p),
-	.refclk_n(user_sma_clock_n),
+	.refclk_p(sma_mgt_refclk_p),
+	.refclk_n(sma_mgt_refclk_n),
 `else
 	.refclk_p(xphy0_refclk_p),
 	.refclk_n(xphy0_refclk_n),
@@ -517,15 +503,20 @@ xgbaser_gt_diff_quad_wrapper xgbaser_gt_wrapper_inst_0 (
 xgbaser_gt_same_quad_wrapper xgbaser_gt_wrapper_inst_0 (
 	.areset(sys_rst),
 `ifdef ENABLE_XGMII4
-	.refclk_p(user_sma_clock_p),
-	.refclk_n(user_sma_clock_n),
+	.refclk_p(sma_mgt_refclk_p),
+	.refclk_n(sma_mgt_refclk_n),
 `else
 	.refclk_p(xphy0_refclk_p),
 	.refclk_n(xphy0_refclk_n),
 `endif
 	.txclk322(txclk322),
+`ifdef ENABLE_XGMII4
+	.gt0_tx_resetdone(xphy4_tx_resetdone),
+	.gt1_tx_resetdone(),
+`else
 	.gt0_tx_resetdone(xphy0_tx_resetdone),
 	.gt1_tx_resetdone(xphy1_tx_resetdone),
+`endif
 
 	.areset_refclk_bufh(areset_refclk_bufh),
 	.areset_clk156(areset_clk156),
@@ -545,14 +536,34 @@ xgbaser_gt_same_quad_wrapper xgbaser_gt_wrapper_inst_0 (
 	.qplloutrefclk(qplloutrefclk) 
 );
 `endif    //USE_DIFF_QUAD
+
+
+`ifdef NO
+wire clksmamgt;
+IBUFDS IBUFDS_1 (
+	.I(sma_mgt_refclk_p),
+	.IB(sma_mgt_refclk_n),
+	.O(clksmamgt)
+);
 `endif
+reg [5:0] counter = 6'd0;
+reg [31:0] onesec_counter = 32'h156250000;
+always @(posedge clk156) begin
+	if (sys_rst) begin
+		counter <= 7'd0;
+		onesec_counter <= 156250000;
+	end else begin
+		onesec_counter <= onesec_counter - 32'd1;
+		if (onesec_counter == 32'd0) begin
+			onesec_counter <= 156250000;
+			counter <= counter + 7'd1;
+		end
+	end
+end
 
-
-
-wire [31:0] global_counter;
-
-assign led[6:0] = counter;
-assign led[7] = xphy0_status[0]; 
+assign led[5:0] = counter;
+assign led[6] = xphy0_status[0]; 
+assign led[7] = xphy4_status[0]; 
 
 
 reg [15:0] tx_counter = 16'h0;
@@ -575,8 +586,13 @@ always @(posedge clk156) begin
 	endcase
 end
 
+`ifdef ENABLE_XGMII4
+assign xgmii4_txd = txd;
+assign xgmii4_txc = txc;
+`else
 assign xgmii0_txd = txd;
 assign xgmii0_txc = txc;
+`endif
 
 //- Tie off related to SFP+
 assign sfp_tx_disable = 5'b10000;	// all ports enable

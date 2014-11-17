@@ -1,2 +1,2 @@
-`define ENABLE_XGMII01
-//`define ENABLE_XGMII4
+//`define ENABLE_XGMII01
+`define ENABLE_XGMII4
