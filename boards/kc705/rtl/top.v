@@ -349,7 +349,8 @@ network_path network_path_inst_0 (
 	.xgmii_txd(xgmii0_txd),
 	.xgmii_txc(xgmii0_txc),
 	.xgmii_rxd(xgmii0_rxdtmp),
-	.xgmii_rxc(xgmii0_rxctmp)
+	.xgmii_rxc(xgmii0_rxctmp),
+	.polarity(1'b0)		// macchan
 ); 
 
 xgmiisync xgmiisync_0 (
@@ -410,7 +411,8 @@ network_path network_path_inst_1 (
 	.xgmii_txd(xgmii1_txd),
 	.xgmii_txc(xgmii1_txc),
 	.xgmii_rxd(xgmii1_rxd),
-	.xgmii_rxc(xgmii1_rxc)
+	.xgmii_rxc(xgmii1_rxc),
+	.polarity(1'b0)		// macchan
 ); 
 `endif
 
@@ -462,7 +464,8 @@ network_path network_path_inst_4 (
 	.xgmii_txd(xgmii4_txd),
 	.xgmii_txc(xgmii4_txc),
 	.xgmii_rxd(xgmii4_rxd),
-	.xgmii_rxc(xgmii4_rxc)
+	.xgmii_rxc(xgmii4_rxc),
+	.polarity(dipsw[0])		// macchan
 ); 
 `endif    //ENABLE_XGMII4
 
