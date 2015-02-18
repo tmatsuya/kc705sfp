@@ -1,2 +1,0 @@
-rm -fr runs vivado.*
-./make_batch.sh && ./load.sh
